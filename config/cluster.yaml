@@ -1,0 +1,115 @@
+# Ray Cluster Configuration - Full Implementation
+
+# Cluster settings
+cluster_name: "ray_distributed_ml"
+
+# Specify the maximum and minimum number of worker nodes for autoscaling.
+max_workers: 8  # Maximum number of worker nodes
+min_workers: 1  # Minimum number of worker nodes
+
+# Specify the Docker container to use if deploying in a containerized environment.
+# Remove or modify this section if not using Docker.
+docker:
+    image: "rayproject/ray-ml:latest"       # Official Ray image with ML tools included
+    container_name: "ray_container"
+    pull_before_run: true                   # Always pull the latest image version
+    run_options:                            # Additional Docker run options
+      - "--shm-size=16gb"                   # Shared memory size
+
+# Specify the settings for the head node (the main control node in the cluster).
+head_node:
+  InstanceType: m5.large                    # Example AWS EC2 instance type for head node
+  ImageId: ami-0123abcd4567ef89g            # Example AWS AMI ID
+  KeyName: ray-ml-key                       # SSH key for accessing the node
+  BlockDeviceMappings:                      # Define storage
+    - DeviceName: "/dev/sda1"
+      Ebs:
+        VolumeSize: 100                     # Storage volume size (in GB)
+        VolumeType: gp2                     # General-purpose SSD
+
+# Worker node settings - multiple nodes that will be dynamically scaled.
+worker_nodes:
+  InstanceType: c5.xlarge                   # EC2 instance type for workers (change per provider)
+  ImageId: ami-0123abcd4567ef89g            # Image ID for worker nodes
+  KeyName: ray-ml-key                       # SSH key for workers
+  BlockDeviceMappings:
+    - DeviceName: "/dev/sda1"
+      Ebs:
+        VolumeSize: 200                     # Storage volume size (in GB)
+        VolumeType: gp2
+  # Custom resources for Ray scheduling
+  Resources:
+    CPU: 4                                  # Number of CPUs per worker node
+    Memory: 32GB                            # Memory allocated per worker node
+    GPU: 1                                  # Number of GPUs per worker node (if applicable)
+
+# Autoscaling settings for Ray
+# Define how Ray should scale up or down the number of workers based on load.
+autoscaling:
+  upscaling_speed: 1.0                      # Speed at which new nodes are added during upscaling
+  idle_timeout_minutes: 10                  # Time in minutes to wait before scaling down idle nodes
+
+# File mounts - share files or folders across the head and worker nodes.
+file_mounts:
+  "/mnt/shared_storage": "/local/path/to/shared/storage"  # Share data, code, or models
+
+# Environment setup on nodes - install necessary dependencies on both head and workers.
+setup_commands:
+  - "sudo apt-get update -y"
+  - "sudo apt-get install -y python3-pip python3-dev"
+  - "pip3 install torch torchvision transformers"  # Example: install PyTorch and Transformers
+  - "pip3 install -r /workspaces/codespaces-jupyter/Distributed-Model-Training/requirements.txt"  # Install project dependencies
+
+# Ray start commands to initialize Ray on head and worker nodes.
+ray_start_commands:
+  head_start_ray_commands:
+    - "ray stop"                             # Stop any existing Ray instances
+    - "ray start --head --port=6379 --autoscaling-config=~/ray_bootstrap_config.yaml"
+  worker_start_ray_commands:
+    - "ray stop"
+    - "ray start --address=$RAY_HEAD_IP:6379"
+
+# Custom environment variables
+head_node_env_vars:
+  RAY_ADDRESS: "auto"
+  RAY_memory_limit: "16GB"
+worker_node_env_vars:
+  RAY_MEMORY_LIMIT: "16GB"
+
+# Security settings - configure SSH keys for secure communication between nodes.
+auth:
+  ssh_user: ubuntu                           # Change to the default user on your cloud provider
+  ssh_private_key: ~/.ssh/id_rsa
+
+# Logging configuration - customize where logs are stored
+log_config:
+  log_dir: "/workspaces/codespaces-jupyter/Distributed-Model-Training/logs"        # Shared log directory across all nodes
+  log_level: "INFO"                          # Log level (DEBUG, INFO, WARN, ERROR)
+
+# Head node networking setup
+head_node_internal_ip: "10.0.0.10"           # Specify a static internal IP for the head node
+head_node_port: 6379                         # Default port for Ray on head node
+
+# Worker node network settings
+worker_node_internal_ip: auto                # Auto-detect worker node IPs
+worker_node_port: auto                       # Auto-assign ports for worker nodes
+
+# Monitoring and metrics collection (optional)
+metrics:
+  enable_metrics: true                       # Enable metrics collection for monitoring
+  prometheus_exporter_port: 8080             # Prometheus metrics export port
+  dashboard_host: "0.0.0.0"                  # Allow the Ray dashboard to be accessed from outside
+  dashboard_port: 8265                       # Default dashboard port
+
+# Resource scheduling based on custom resources
+# For ML workloads, it’s common to schedule based on GPU availability.
+resources:
+  GPU: { "nvidia-v100": 1, "nvidia-a100": 2 }  # Example: Define different types of GPUs
+  CPU: 4                                      # Define how many CPUs each worker can use
+  custom_resource_1: 5                        # Example of a custom resource
+
+# Debugging and fault-tolerance settings
+debugging:
+  enable_breakpoints_on_failure: true         # Enable breakpoints in case of errors
+  remote_debugging_enabled: false             # Enable or disable remote debugging
+  restart_on_failure: true                    # Restart

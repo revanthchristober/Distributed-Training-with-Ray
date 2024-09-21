@@ -1,0 +1,144 @@
+# environment.yaml
+
+# Environment configuration for distributed training setup
+
+# Device configurations (CPU/GPU settings)
+device:
+  use_gpu: true                    # Whether to use GPU for training. Set to false for CPU.
+  gpu_id: 0                        # If using GPU, this specifies which GPU to use (0 for the first GPU).
+  num_gpus: 2                      # Total number of GPUs available (useful for multi-GPU training).
+  mixed_precision: true            # Enable mixed precision training for speed optimization.
+  fallback_to_cpu: true            # Fallback to CPU if no GPUs are available.
+
+# Directory paths for data, model, checkpoints, logs
+paths:
+  # data_dir: "./data/"               # Path to the main data directory
+  # raw_data_dir: "./data/raw/"        # Path to the raw datasets
+  # processed_data_dir: "./data/processed/"  # Path to processed datasets
+  # model_save_dir: "./models/"        # Directory to save trained models
+  # logs_dir: "./logs/"                # Directory to save logs
+  
+  raw_data_dir: "./data/raw/"        # Path to the raw datasets
+  processed_data_dir: "./data/processed/"  # Path to processed datasets
+  vocab_dir: "./data/vocab/"                      # Path where vocabulary files will be saved/loaded.
+  model_save_dir: "/workspaces/codespaces-jupyter/Distributed-Model-Training/src/models"                # Directory where trained models will be saved.
+  checkpoint_dir: "/workspaces/codespaces-jupyter/Distributed-Model-Training/src/checkpoints"           # Directory for saving checkpoints during training.
+  logs_dir: "/workspaces/codespaces-jupyter/Distributed-Model-Training/logs"                        # Directory for saving training logs and metrics.
+  ray_temp_dir: "/workspaces/codespaces-jupyter/Distributed-Model-Training/tmp/ray"                 # Directory for Ray's temporary files and logs.
+
+# Distributed computing setup
+distributed:
+  enable_ray: true                                   # Whether to use Ray for distributed training.
+  num_cpus_per_worker: 4                             # Number of CPU cores allocated to each worker node.
+  num_gpus_per_worker: 1                             # Number of GPUs allocated to each worker node.
+  num_workers: 4                                     # Number of worker nodes to spawn for training.
+  ray_address: "auto"                                # Ray cluster address. Use "auto" for automatic detection.
+  ray_dashboard: true                                # Enable Ray dashboard for monitoring.
+
+# Training configuration
+# Inside your hyperparameters YAML file
+training:
+  batch_size: 64                                     # Batch size for training.
+  learning_rate: 0.001                               # Base learning rate.
+  lr_scheduler:                                      # Learning rate scheduler configuration
+    type: "ReduceLROnPlateau"                        # Type of scheduler (e.g., ReduceLROnPlateau, CosineAnnealingLR)
+    factor: 0.1                                      # Learning rate reduction factor when plateau is detected.
+    patience: 5                                      # Number of epochs to wait before reducing learning rate.
+    min_lr: 1e-6                                     # Minimum learning rate.
+  early_stopping:
+    enabled: true                                    # Whether to enable early stopping.
+    patience: 10                                     # Number of epochs with no improvement before stopping.
+    min_delta: 0.001                                 # Minimum change to qualify as improvement.
+  gradient_clipping:
+    enabled: true                                    # Enable gradient clipping to prevent exploding gradients.
+    max_norm: 5.0                                    # Maximum gradient norm for clipping.
+  mixed_precision_training:
+    enabled: true                                    # Enable mixed precision training (use float16 where possible).
+
+# Model checkpointing
+checkpointing:
+  save_best_only: true                               # Save only the best model based on validation performance.
+  save_freq: 1                                       # Frequency (in epochs) to save checkpoints.
+  monitor: "val_accuracy"                            # Metric to monitor for saving the best model (e.g., val_loss, val_accuracy).
+  save_weights_only: false                           # Whether to save only model weights or full model.
+  load_checkpoint: true                              # Whether to load from checkpoint if available.
+  auto_resume: true                                  # Automatically resume training from the last checkpoint.
+
+# Logging configurations
+logging:
+  log_level: "INFO"                                  # Logging level (e.g., DEBUG, INFO, WARNING, ERROR).
+  log_to_console: true                               # Whether to print logs to the console.
+  log_to_file: true                                  # Whether to save logs to a file.
+  log_dir: "/workspace/logs/training"                # Directory where log files will be stored.
+  tensorboard:
+    enabled: true                                    # Enable TensorBoard logging for visualizing training metrics.
+    log_dir: "/workspace/logs/tensorboard"           # Directory for TensorBoard log files.
+
+# Ray-specific configurations
+ray:
+  log_to_driver: true                                # Whether to log output from workers to the driver.
+  max_calls_per_worker: 10000                        # Maximum number of tasks a worker can handle before restarting.
+  temp_dir: "/workspace/tmp/ray"                     # Directory for temporary files.
+  object_store_memory: 3000000000                    # Memory allocation for Ray object store.
+  worker_cache_size: 100                             # Cache size for Ray workers.
+  dashboard_host: "127.0.0.1"                        # Host address for Ray dashboard.
+  dashboard_port: 8265                               # Port for Ray dashboard.
+
+# Debugging options
+debugging:
+  enable_profiling: true                             # Enable profiling for performance analysis.
+  enable_memory_logging: true                        # Enable memory usage logging for debugging.
+  enable_ray_timeline: false                         # Enable Ray timeline logging for performance debugging.
+
+# Data augmentation and pre-processing
+data_preprocessing:
+  text_normalization: true                           # Apply text normalization during preprocessing.
+  vocab_size: 50000                                  # Maximum vocabulary size for the model.
+  max_seq_len: 512                                   # Maximum sequence length for input text.
+  pad_token: "<PAD>"                                 # Padding token for shorter sequences.
+  unk_token: "<UNK>"                                 # Token for unknown words not in vocabulary.
+  truncation_strategy: "longest_first"               # Strategy for truncating sequences longer than max_seq_len.
+  lower_case: true                                   # Convert all input text to lowercase.
+  stopword_removal: true                             # Enable stopword removal during preprocessing.
+  stemming: false                                    # Enable stemming for word reduction.
+  lemmatization: true                                # Enable lemmatization for word base-form conversion.
+
+# Vocabulary building and loading
+vocabulary:
+  build_if_missing: true                             # Whether to build a new vocabulary if it doesn't exist.
+  save_vocab: true                                   # Save the vocabulary after building it.
+  vocab_file: "/workspaces/codespaces-jupyter/Distributed-Model-Training/data/vocab/vocab.pkl"           # File path to save or load vocabulary.
+  min_word_freq: 5                                   # Minimum word frequency to include in the vocabulary.
+
+# Evaluation settings
+evaluation:
+  val_split: 0.1                                     # Fraction of training data to use for validation.
+  test_split: 0.1                                    # Fraction of training data to use for testing.
+  metrics:                                           # Metrics to track during evaluation.
+    - accuracy
+    - precision
+    - recall
+    - f1_score
+
+# Experiment details (for logging, reporting, tracking)
+experiment:
+  name: "distributed-text-classification"            # Name of the current experiment.
+  description: "RNN-based text classification with Ray distributed training."
+  run_id: "exp_20240921_v1"                          # Unique run ID for experiment tracking.
+  report_frequency: 1                                # Frequency of reporting metrics during training.
+  checkpoint_frequency: 5                            # Frequency of saving checkpoints (in epochs).
+  random_seed: 42                                    # Random seed for reproducibility.
+
+
+# device:
+#   use_gpu: true                      # Whether to use GPU for training (true/false)
+#   gpu_id: 0                          # GPU ID (if using GPU)
+#   random_seed: 42                    # Random seed for reproducibility
+
+# resources:
+#   num_workers: 4                     # Number of workers (threads) to use for data loading
+#   num_gpus: 1                        # Number of GPUs to use (for distributed training)
+
+# logging:
+#   level: "info"                      # Logging level ("debug", "info", "warning", "error")
+#   log_to_file: true                  # Whether to log to file or console

@@ -1,0 +1,8 @@
+2024-09-21 03:27:29,823 - INFO - Loading and preprocessing data from data/raw/train.csv...
+2024-09-21 03:27:30,270 - INFO - Data cleaned: removed duplicates and missing values.
+2024-09-21 03:27:30,282 - INFO - Dataset loaded and shuffled successfully.
+2024-09-21 03:27:30,282 - INFO - Cleaning, normalizing, and tokenizing text data...
+2024-09-21 03:41:19,882 - INFO - Saved train data to data/processed/train_data.csv
+2024-09-21 03:41:20,119 - INFO - Saved val data to data/processed/val_data.csv
+2024-09-21 03:41:20,372 - INFO - Saved test data to data/processed/test_data.csv
+2024-09-21 03:41:20,372 - INFO - Preprocessing complete. Processed data saved to data/processed

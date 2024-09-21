@@ -1,0 +1,5 @@
+{"time": "2024-09-21 03:43:33,733", "level": "INFO", "name": "my_logger", "module": "download_dataset", "function": "download_kaggle_dataset", "message": "Downloading dataset amananandrai/ag-news-classification-dataset from Kaggle..."}
+{"time": "2024-09-21 03:43:37,506", "level": "INFO", "name": "my_logger", "module": "download_dataset", "function": "download_kaggle_dataset", "message": "Dataset downloaded and extracted to data/raw"}
+{"time": "2024-09-21 03:43:37,506", "level": "INFO", "name": "my_logger", "module": "download_dataset", "function": "download_large_file", "message": "Starting download of https://example.com/large-dataset.zip"}
+{"time": "2024-09-21 03:43:38,324", "level": "ERROR", "name": "my_logger", "module": "download_dataset", "function": "download_large_file", "message": "Error downloading large file: 500 Server Error: Internal Server Error for url: https://example.com/large-dataset.zip"}
+{"time": "2024-09-21 03:43:38,324", "level": "ERROR", "name": "my_logger", "module": "download_dataset", "function": "main", "message": "URL download failed: 500 Server Error: Internal Server Error for url: https://example.com/large-dataset.zip"}

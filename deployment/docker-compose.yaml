@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  ray-head:
+    image: my-ray-cluster:latest  # Replace with the name of the image built from Dockerfile
+    container_name: ray-head
+    hostname: ray-head
+    environment:
+      - RAY_HEAD_SERVICE_HOST=ray-head
+    ports:
+      - "8265:8265"  # Ray dashboard
+      - "6379:6379"  # Ray head node
+      - "6006:6006"  # TensorBoard
+    volumes:
+      - ./data:/app/data  # Shared volume for data
+    networks:
+      - ray-network
+    command: >
+      ray start --head --node-ip-address=ray-head --port=6379 --dashboard-host=0.0.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+  ray-worker:
+    image: my-ray-cluster:latest
+    environment:
+      - RAY_HEAD_SERVICE_HOST=ray-head
+    depends_on:
+      - ray-head
+    volumes:
+      - ./data:/app/data
+    networks:
+      - ray-network
+    command: >
+      ray start --address='ray-head:6379' --redis-password='5241590000000000'
+    deploy:
+      mode: replicated
+      replicas: 3  # Define the number of worker nodes
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+networks:
+  ray-network:
+    driver: bridge

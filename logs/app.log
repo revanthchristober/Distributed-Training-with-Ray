@@ -1,0 +1,5 @@
+2024-09-21 03:43:33,733 - my_logger - INFO - download_dataset - download_kaggle_dataset - Downloading dataset amananandrai/ag-news-classification-dataset from Kaggle...
+2024-09-21 03:43:37,506 - my_logger - INFO - download_dataset - download_kaggle_dataset - Dataset downloaded and extracted to data/raw
+2024-09-21 03:43:37,506 - my_logger - INFO - download_dataset - download_large_file - Starting download of https://example.com/large-dataset.zip
+2024-09-21 03:43:38,324 - my_logger - ERROR - download_dataset - download_large_file - Error downloading large file: 500 Server Error: Internal Server Error for url: https://example.com/large-dataset.zip
+2024-09-21 03:43:38,324 - my_logger - ERROR - download_dataset - main - URL download failed: 500 Server Error: Internal Server Error for url: https://example.com/large-dataset.zip

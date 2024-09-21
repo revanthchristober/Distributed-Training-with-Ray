@@ -1,0 +1,51 @@
+# Ray for distributed training
+ray[default]
+ray[tune]  # For hyperparameter tuning
+
+# Machine Learning Libraries
+tensorflow  # For building and training ML models
+torch       # PyTorch for building deep learning models
+
+# Data Processing and Handling
+numpy       # For numerical computations
+pandas       # For data manipulation
+scikit-learn   # For model evaluation and preprocessing
+
+# Logging and Monitoring
+loguru       # For advanced logging
+
+# Visualization
+matplotlib   # For data visualization
+seaborn     # For advanced statistical plots
+
+# Model Saving and Loading
+h5py         # Required for saving/loading TensorFlow models
+
+# Distributed Systems Utilities
+psutil       # For profiling system performance (memory, CPU)
+redis        # For distributed systems or caching (if required by Ray)
+
+# Profiling and Performance
+memory-profiler  # For memory profiling during training
+line-profiler     # For line-by-line profiling of Python functions
+
+# Experiment Tracking and Logging
+mlflow      # Optional: For tracking experiments and logging model performance
+
+# PyYAML for Config Files
+pyyaml       # For reading and writing configuration files (yaml)
+
+# Jupyter Notebooks
+jupyter      # For running Jupyter notebooks (if using for experiments)
+
+# Docker (Optional)
+docker       # Docker library for containerizing applications (if needed)
+
+# Testing
+pytest       # For writing and running unit and integration tests
+pytest-cov  # For checking code coverage during tests
+
+spacy 
+tqdm
+
+kaggle

@@ -1,0 +1,58 @@
+# hyperparameters.yaml
+# This YAML file defines the hyperparameters for the RNN model, training configurations, and optimizer settings.
+
+model:
+  rnn_type: "lstm"                   # Type of RNN: "lstm" or "gru"
+  embedding_dim: 300                  # Dimension of word embeddings (300 for GloVe embeddings or trainable embeddings)
+  hidden_dim: 256                     # Hidden state dimensionality for the RNN layer
+  n_layers: 2                         # Number of layers in the RNN (stacked LSTMs or GRUs)
+  bidirectional: true                 # Whether to use a bidirectional RNN (true/false)
+  dropout: 0.5                        # Dropout rate for regularization to prevent overfitting
+
+training:
+  batch_size: 64                      # Size of each training batch
+  epochs: 10                          # Number of epochs for training (can be overridden by Ray Tune)
+  learning_rate: 0.001                # Initial learning rate for optimizer (can be tuned)
+  lr_scheduler: true                  # Whether to use a learning rate scheduler (true/false)
+  lr_decay_factor: 0.5                # Factor by which learning rate will be reduced
+  lr_decay_patience: 2                # Number of epochs with no improvement to wait before reducing the learning rate
+  gradient_clipping: 5.0              # Max norm for gradient clipping (to prevent exploding gradients in RNN)
+  early_stopping: true                # Enable early stopping if the validation loss does not improve
+  early_stopping_patience: 3          # Number of epochs with no improvement after which training will be stopped
+
+dataset:
+  vocab_size: 10000                   # Size of the vocabulary (number of unique tokens)
+  max_seq_len: 500                    # Maximum sequence length for padding/truncating text
+  padding_idx: 0                      # Index for padding tokens (used in Embedding layer)
+  shuffle_data: true                  # Whether to shuffle the data during training
+
+optimizer:
+  optimizer_type: "adam"              # Type of optimizer: "adam", "sgd", "rmsprop"
+  weight_decay: 1e-5                  # Weight decay (L2 regularization) for the optimizer
+  momentum: 0.9                       # Momentum (used only if optimizer is "sgd")
+
+scheduler:
+  use_scheduler: true                 # Whether to use a learning rate scheduler (true/false)
+  scheduler_type: "ReduceLROnPlateau" # Type of learning rate scheduler: "ReduceLROnPlateau", "StepLR", "CosineAnnealingLR"
+  step_size: 3                        # Number of epochs after which to reduce LR (used in StepLR)
+  gamma: 0.1                          # Multiplicative factor of LR decay (for StepLR)
+
+logging:
+  log_interval: 100                   # How often to log training metrics (in batches)
+  log_to_tensorboard: true            # Whether to log metrics to TensorBoard (true/false)
+  save_checkpoints: true              # Whether to save model checkpoints after each epoch
+  checkpoint_dir: "./checkpoints"     # Directory where checkpoints will be saved
+
+tuning:
+  use_ray_tune: true                  # Whether to use Ray Tune for hyperparameter tuning (true/false)
+  num_trials: 20                      # Number of trials for Ray Tune
+  hyperparameters_to_tune:            # List of hyperparameters to tune using Ray Tune
+    - learning_rate
+    - batch_size
+    - epochs
+
+distributed_training:
+  use_distributed: true               # Whether to use distributed training (Ray or multi-GPU setup)
+  num_workers: 4                      # Number of workers (can be CPUs or GPUs) for distributed training
+  backend: "nccl"                     # Backend to use for distributed training (nccl, gloo, mpi)
+
