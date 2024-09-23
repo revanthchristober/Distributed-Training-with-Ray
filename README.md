@@ -200,4 +200,4 @@ Contributions are welcome! If you would like to contribute, please fork the repo
 
 ## **License**
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
+This project is licensed under The GNU General Public License v3.0 License. See the [LICENSE](./LICENSE) file for more details.
